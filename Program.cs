@@ -17,6 +17,7 @@ namespace WebApi
             builder.Services.AddScoped<AnimeSer>();//реЇстрац≥€ серв≥с≥в (addscoped створюЇ екземпл€р дл€ кожного запиту)
             builder.Services.AddScoped<MangaSer>();
             builder.Services.AddScoped<FavorSer>();
+            builder.Services.AddScoped<FavorDbService>();
 
             var app = builder.Build();
 
