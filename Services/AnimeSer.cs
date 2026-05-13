@@ -9,55 +9,47 @@ namespace WebApi.Services
 
         public AnimeSer()
         {
-            _client = new HttpClient(); 
+            _client = new HttpClient();
         }
 
         public async Task<AnimeSearchResponse> SearchAnimeAsync(string animeName)
         {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://api.jikan.moe/v4/anime?q={animeName}&limit=5")
-            };
+            var response = await _client.GetAsync($"https://api.jikan.moe/v4/anime?q={animeName}&limit=5");
+            response.EnsureSuccessStatusCode();
+            var body = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<AnimeSearchResponse>(body);
+        }
 
-            using (var response = await _client.SendAsync(request)) //запит до арі
-            {
-                response.EnsureSuccessStatusCode(); 
-                var body = await response.Content.ReadAsStringAsync(); 
-                return JsonConvert.DeserializeObject<AnimeSearchResponse>(body); //перетворюємо json-текст у наші моделі
-            }
+        public async Task<AnimeFullResponse> GetAnimeByIdAsync(int malId)
+        {
+            var response = await _client.GetAsync($"https://api.jikan.moe/v4/anime/{malId}/full");
+            response.EnsureSuccessStatusCode();
+            var body = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<AnimeFullResponse>(body);
         }
 
         public async Task<AnimeCharactersResponse> GetCharactersAsync(int animeId)
         {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://api.jikan.moe/v4/anime/{animeId}/characters") 
-            };
-
-            using (var response = await _client.SendAsync(request))
-            {
-                response.EnsureSuccessStatusCode();
-                var body = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<AnimeCharactersResponse>(body);
-            }
+            var response = await _client.GetAsync($"https://api.jikan.moe/v4/anime/{animeId}/characters");
+            response.EnsureSuccessStatusCode();
+            var body = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<AnimeCharactersResponse>(body);
         }
 
         public async Task<AnimeThemesResponse> GetThemesAsync(int animeId)
         {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://api.jikan.moe/v4/anime/{animeId}/themes") 
-            };
+            var response = await _client.GetAsync($"https://api.jikan.moe/v4/anime/{animeId}/themes");
+            response.EnsureSuccessStatusCode();
+            var body = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<AnimeThemesResponse>(body);
+        }
+        public async Task<AnimeSearchResponse> SearchAnimeByGenreAsync(int genreId)
+        {
 
-            using (var response = await _client.SendAsync(request))
-            {
-                response.EnsureSuccessStatusCode();
-                var body = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<AnimeThemesResponse>(body);
-            }
+            var response = await _client.GetAsync($"https://api.jikan.moe/v4/anime?genres={genreId}&order_by=score&sort=desc&limit=5");
+            response.EnsureSuccessStatusCode();
+            var body = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<AnimeSearchResponse>(body);
         }
     }
 }

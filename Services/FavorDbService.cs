@@ -5,11 +5,12 @@ namespace WebApi.Services
 {
     public class FavorDbService
     {
-     
+        // --- ДОДАВАННЯ ---
         public async Task InsertFavoriteAsync(favorModel newItem)
         {
-            string sqlQuery = "INSERT INTO favorites (mal_id, title, type, personal_note, score) " +
-                              "VALUES (@mal_id, @title, @type, @personal_note, @score)";
+            // Додали status у запит
+            string sqlQuery = "INSERT INTO favorites (mal_id, title, type, personal_note, score, status) " +
+                              "VALUES (@mal_id, @title, @type, @personal_note, @score, @status)";
 
             using (var connect = new NpgsqlConnection(Constants.Connect))
             {
@@ -22,15 +23,20 @@ namespace WebApi.Services
                     command.Parameters.AddWithValue("@type", newItem.Type ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@personal_note", newItem.PersonalNote ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@score", newItem.Score ?? (object)DBNull.Value);
+                    // Додали передачу статусу
+                    command.Parameters.AddWithValue("@status", newItem.Status ?? (object)DBNull.Value);
 
                     await command.ExecuteNonQueryAsync();
                 }
             }
-        } 
+        }
+
+        // --- ОТРИМАННЯ ВСІХ ---
         public async Task<List<favorModel>> GetAllFavoritesAsync()
         {
             var list = new List<favorModel>();
-            string sqlQuery = "SELECT id, mal_id, title, type, personal_note, score FROM favorites";
+            // Додали status у вибірку
+            string sqlQuery = "SELECT id, mal_id, title, type, personal_note, score, status FROM favorites";
 
             using (var connect = new NpgsqlConnection(Constants.Connect))
             {
@@ -48,7 +54,9 @@ namespace WebApi.Services
                                 Title = reader.IsDBNull(2) ? null : reader.GetString(2),
                                 Type = reader.IsDBNull(3) ? null : reader.GetString(3),
                                 PersonalNote = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                Score = reader.IsDBNull(5) ? null : reader.GetFloat(5)
+                                Score = reader.IsDBNull(5) ? null : reader.GetFloat(5),
+                                // Зчитуємо статус (це 7-ма колонка, тому індекс 6)
+                                Status = reader.IsDBNull(6) ? null : reader.GetString(6)
                             });
                         }
                     }
@@ -57,10 +65,12 @@ namespace WebApi.Services
             return list;
         }
 
+        // --- ОНОВЛЕННЯ ---
         public async Task<bool> UpdateFavoriteAsync(int id, favorModel updatedItem)
         {
+            // Додали status в оновлення
             string sqlQuery = "UPDATE favorites SET mal_id = @mal_id, title = @title, type = @type, " +
-                              "personal_note = @personal_note, score = @score WHERE id = @id";
+                              "personal_note = @personal_note, score = @score, status = @status WHERE id = @id";
 
             using (var connect = new NpgsqlConnection(Constants.Connect))
             {
@@ -73,6 +83,8 @@ namespace WebApi.Services
                     command.Parameters.AddWithValue("@type", updatedItem.Type ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@personal_note", updatedItem.PersonalNote ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@score", updatedItem.Score ?? (object)DBNull.Value);
+                    // Оновлення статусу
+                    command.Parameters.AddWithValue("@status", updatedItem.Status ?? (object)DBNull.Value);
 
                     int rowsAffected = await command.ExecuteNonQueryAsync();
                     return rowsAffected > 0;
@@ -80,7 +92,7 @@ namespace WebApi.Services
             }
         }
 
-     
+        // --- ВИДАЛЕННЯ ---
         public async Task<bool> DeleteFavoriteAsync(int id)
         {
             string sqlQuery = "DELETE FROM favorites WHERE id = @id";

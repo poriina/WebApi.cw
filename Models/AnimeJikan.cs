@@ -21,6 +21,10 @@ namespace WebApi.Models
 
     public class AnimeFullData
     {
+        public int mal_id { get; set; }         
+        public string title { get; set; }       
+        public float? score { get; set; }       
+
         public string title_japanese { get; set; }
         public string status { get; set; }
         public string synopsis { get; set; }
@@ -58,6 +62,20 @@ namespace WebApi.Models
         public int mal_id { get; set; }
         public string title { get; set; }
         public string status { get; set; }
+        public float? score { get; set; }
+        public int? chapters { get; set; }
+    }
+    public class MangaFullResponse
+    {
+        public MangaFullData data { get; set; }
+    }
+
+    public class MangaFullData
+    {
+        public int mal_id { get; set; }
+        public string title { get; set; }
+        public string status { get; set; }
+        public string synopsis { get; set; }
         public float? score { get; set; }
         public int? chapters { get; set; }
     }
