@@ -5,10 +5,10 @@ namespace WebApi.Services
 {
     public class FavorDbService
     {
-        // --- ДОДАВАННЯ ---
+
         public async Task InsertFavoriteAsync(favorModel newItem)
         {
-            // Додали status у запит
+
             string sqlQuery = "INSERT INTO favorites (mal_id, title, type, personal_note, score, status) " +
                               "VALUES (@mal_id, @title, @type, @personal_note, @score, @status)";
 
@@ -23,7 +23,7 @@ namespace WebApi.Services
                     command.Parameters.AddWithValue("@type", newItem.Type ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@personal_note", newItem.PersonalNote ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@score", newItem.Score ?? (object)DBNull.Value);
-                    // Додали передачу статусу
+  
                     command.Parameters.AddWithValue("@status", newItem.Status ?? (object)DBNull.Value);
 
                     await command.ExecuteNonQueryAsync();
@@ -31,11 +31,11 @@ namespace WebApi.Services
             }
         }
 
-        // --- ОТРИМАННЯ ВСІХ ---
+
         public async Task<List<favorModel>> GetAllFavoritesAsync()
         {
             var list = new List<favorModel>();
-            // Додали status у вибірку
+
             string sqlQuery = "SELECT id, mal_id, title, type, personal_note, score, status FROM favorites";
 
             using (var connect = new NpgsqlConnection(Constants.Connect))
@@ -55,7 +55,6 @@ namespace WebApi.Services
                                 Type = reader.IsDBNull(3) ? null : reader.GetString(3),
                                 PersonalNote = reader.IsDBNull(4) ? null : reader.GetString(4),
                                 Score = reader.IsDBNull(5) ? null : reader.GetFloat(5),
-                                // Зчитуємо статус (це 7-ма колонка, тому індекс 6)
                                 Status = reader.IsDBNull(6) ? null : reader.GetString(6)
                             });
                         }
@@ -65,10 +64,10 @@ namespace WebApi.Services
             return list;
         }
 
-        // --- ОНОВЛЕННЯ ---
+
         public async Task<bool> UpdateFavoriteAsync(int id, favorModel updatedItem)
         {
-            // Додали status в оновлення
+
             string sqlQuery = "UPDATE favorites SET mal_id = @mal_id, title = @title, type = @type, " +
                               "personal_note = @personal_note, score = @score, status = @status WHERE id = @id";
 
@@ -83,7 +82,6 @@ namespace WebApi.Services
                     command.Parameters.AddWithValue("@type", updatedItem.Type ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@personal_note", updatedItem.PersonalNote ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@score", updatedItem.Score ?? (object)DBNull.Value);
-                    // Оновлення статусу
                     command.Parameters.AddWithValue("@status", updatedItem.Status ?? (object)DBNull.Value);
 
                     int rowsAffected = await command.ExecuteNonQueryAsync();
@@ -92,7 +90,6 @@ namespace WebApi.Services
             }
         }
 
-        // --- ВИДАЛЕННЯ ---
         public async Task<bool> DeleteFavoriteAsync(int id)
         {
             string sqlQuery = "DELETE FROM favorites WHERE id = @id";

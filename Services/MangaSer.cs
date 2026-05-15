@@ -12,7 +12,7 @@ namespace WebApi.Services
             _client = new HttpClient();
         }
 
-        // Пошук 5 результатів
+
         public async Task<MangaSearchResponse> SearchMangaAsync(string title)
         {
             var response = await _client.GetAsync($"https://api.jikan.moe/v4/manga?q={title}&limit=5");
@@ -21,7 +21,7 @@ namespace WebApi.Services
             return JsonConvert.DeserializeObject<MangaSearchResponse>(body);
         }
 
-        // Отримання деталей конкретної манги
+
         public async Task<MangaFullResponse> GetMangaByIdAsync(int malId)
         {
             var response = await _client.GetAsync($"https://api.jikan.moe/v4/manga/{malId}/full");

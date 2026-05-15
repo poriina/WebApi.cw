@@ -178,7 +178,7 @@ namespace WebApi.BotHandlers
             var mangaSer = scope.ServiceProvider.GetRequiredService<MangaSer>();
             var favorDb = scope.ServiceProvider.GetRequiredService<FavorDbService>();
 
-            // --- ЛОГІКА ВИДАЛЕННЯ ---
+      
             if (data == "manage_del")
             {
                 var favorites = await favorDb.GetAllFavoritesAsync();
@@ -199,7 +199,7 @@ namespace WebApi.BotHandlers
                 await botClient.DeleteMessage(chatId, callbackQuery.Message.MessageId);
             }
 
-            // --- ЖАНРИ ---
+
             else if (data == "genre_cat_anime" || data == "genre_cat_manga")
             {
                 string prefix = data == "genre_cat_anime" ? "agenre_" : "mgenre_";
@@ -211,7 +211,7 @@ namespace WebApi.BotHandlers
                 });
                 await botClient.EditMessageText(new ChatId(chatId), callbackQuery.Message.MessageId, "Обери жанр:", replyMarkup: keyboard);
             }
-            // ОСЬ ЦІ БЛОКИ БУЛИ ВТРАЧЕНІ (Пошук за жанром)
+
             else if (data.StartsWith("agenre_"))
             {
                 int genreId = int.Parse(data.Split('_')[1]);
@@ -235,7 +235,6 @@ namespace WebApi.BotHandlers
                 }
             }
 
-            // --- ДЕТАЛІ ---
             else if (data.StartsWith("info_"))
             {
                 int malId = int.Parse(data.Split('_')[1]);
@@ -264,7 +263,6 @@ namespace WebApi.BotHandlers
                 await botClient.SendMessage(chatId, info, parseMode: ParseMode.Markdown, replyMarkup: new InlineKeyboardMarkup(buttons));
             }
 
-            // --- СТАТУСИ ТА ЗБЕРЕЖЕННЯ ---
             else if (data.StartsWith("add_fav_") || data.StartsWith("m_add_fav_"))
             {
                 bool isAnime = data.StartsWith("add_fav_");
@@ -302,7 +300,7 @@ namespace WebApi.BotHandlers
                 }
             }
 
-            // --- ПОВНІ ОПИСИ, ПЕРСОНАЖІ, ТЕМИ ---
+
             else if (data.StartsWith("adesc_"))
             {
                 var res = await animeSer.GetAnimeByIdAsync(int.Parse(data.Split('_')[1]));
